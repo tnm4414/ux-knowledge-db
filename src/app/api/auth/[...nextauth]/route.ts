@@ -1,3 +1,7 @@
+// Tells NextAuth to use GitHub as the login provider.
+// Tells it to store users in your DB via PrismaAdapter(prisma).
+// Adds id and role to the session object so we can use them later.
+
 import NextAuth from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import { PrismaAdapter } from "@auth/prisma-adapter";

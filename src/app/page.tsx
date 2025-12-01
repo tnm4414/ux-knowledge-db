@@ -1,6 +1,15 @@
+
+// src/app/page.tsx
+
+
 "use client";
 
+import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 import { useSession, signIn, signOut } from "next-auth/react";
+
+
+
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -30,14 +39,24 @@ export default function Home() {
       ) : (
         <>
           <p>Signed in as {session.user?.email ?? session.user?.name}</p>
-          <button
-            onClick={() => signOut()}
-            className="border px-4 py-2 rounded"
-          >
-            Sign out
-          </button>
+
+          <div className="flex gap-3">
+            <button
+              onClick={() => signOut()}
+              className="border px-4 py-2 rounded"
+            >
+              Sign out
+            </button>
+
+            <Link
+              href="/test"
+              className="border px-4 py-2 rounded bg-black text-white"
+            >
+              Go to Test Page  
+            </Link>
+          </div>
         </>
       )}
     </main>
   );
-}
+} 

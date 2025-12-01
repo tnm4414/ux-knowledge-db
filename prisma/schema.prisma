@@ -1,3 +1,4 @@
+// ---------- Prisma setup ----------
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,16 +8,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ---------- Auth models (NextAuth + PrismaAdapter) ----------
+
 model User {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String?
-  email         String?  @unique
+  email         String?   @unique
   emailVerified DateTime?
   image         String?
-  role          String   @default("viewer") // custom field you can use later
+  role          String    @default("viewer") // your least-privilege field
 
+  // NextAuth relations
   accounts      Account[]
   sessions      Session[]
+
+  // Project relations
+  ownedProjects   Project[]            @relation("OwnedProjects")
+  updatedProjects Project[]            @relation("UpdatedProjects")
+  contributions   ProjectContributor[]
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -55,4 +65,90 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// ---------- Lookup tables: ToolType & Status ----------
+
+model ToolType {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  projects Project[]
+}
+
+model Status {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  projects Project[]
+}
+
+// ---------- Core: Project model ----------
+
+model Project {
+  // projectID – primary key
+  id           String   @id @default(cuid())
+
+  // projectTitle
+  title        String
+
+  // description text
+  description  String?
+
+  // tags array of strings
+  tags         String[]
+
+  // projectLink
+  projectLink  String
+
+  // dates
+  startDate    DateTime
+  endDate      DateTime?
+  dateAdded    DateTime @default(now())
+  lastModified DateTime @updatedAt
+
+  // ownerID foreign key → User
+  ownerId      String
+  owner        User     @relation("OwnedProjects", fields: [ownerId], references: [id])
+
+  // updatedBy foreign key → User
+  updatedById  String?
+  updatedBy    User?    @relation("UpdatedProjects", fields: [updatedById], references: [id])
+
+  // toolType foreign key → ToolType
+  toolTypeId   String
+  toolType     ToolType @relation(fields: [toolTypeId], references: [id])
+
+  // status foreign key → Status
+  statusId     String
+  status       Status   @relation(fields: [statusId], references: [id])
+
+  // contributors many-to-many → User (via join table)
+  contributors ProjectContributor[]
+
+  // relatedProjects – many-to-one self relation (this project can have a parent)
+  parentProjectId String?
+  parentProject   Project? @relation("ProjectRelations", fields: [parentProjectId], references: [id])
+  relatedProjects Project[] @relation("ProjectRelations")
+
+  @@index([ownerId])
+  @@index([toolTypeId])
+  @@index([statusId])
+}
+
+model LinksOnProject {
+  projectId String
+  linkId    String  // here "linkId" is just the URL/string or some id you define
+
+  @@id([projectId, linkId])
+}
+
+// Join table for many-to-many between Project and User
+model ProjectContributor {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String
+
+  project   Project  @relation(fields: [projectId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([projectId, userId])
 }

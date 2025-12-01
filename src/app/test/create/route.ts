@@ -18,12 +18,12 @@ export async function POST(req: Request) {
   }
 
   // Write to Supabase via Prisma
-  await prisma.ToolType.create({
+  await prisma.toolType.create({
     data: { name },
   });
 
   // Redirect back to /test
-  return NextResponse.redirect("/test");
+  return NextResponse.redirect("/home");
 }
 
 

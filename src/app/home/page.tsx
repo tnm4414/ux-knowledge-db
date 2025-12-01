@@ -7,12 +7,12 @@
 // NO "use client"
 // NO hooks
 
-// src/app/test/page.tsx
+// src/app/home/page.tsx   home page
 
 import Link from "next/link";
 
 
-export default function HomePage() {
+export default function page() {
   return (
     <main style={{ padding: 40 }}>
       <h1 style={{ fontSize: 32, fontWeight: "bold" }}>
@@ -22,7 +22,7 @@ export default function HomePage() {
       <p style={{ marginTop: 10 }}>Next.js + Prisma + Supabase</p>
 
       <Link
-        href="/test"
+        href="/"
         style={{
           display: "inline-block",
           marginTop: 20,
@@ -32,7 +32,7 @@ export default function HomePage() {
           borderRadius: 8,
         }}
       >
-        Go to Test Page 
+        Go to login Page 
       </Link>
     </main>
   );

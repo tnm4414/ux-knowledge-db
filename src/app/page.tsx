@@ -1,11 +1,10 @@
 
-// src/app/page.tsx
+// src/app/page.tsx   login page
 
 
 "use client";
 
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
 import { useSession, signIn, signOut } from "next-auth/react";
 
 
@@ -49,10 +48,10 @@ export default function Home() {
             </button>
 
             <Link
-              href="/test"
+              href="/home"
               className="border px-4 py-2 rounded bg-black text-white"
             >
-              Go to Test Page  
+              Go to Home Page  
             </Link>
           </div>
         </>

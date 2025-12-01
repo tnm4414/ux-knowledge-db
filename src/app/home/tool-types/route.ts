@@ -11,21 +11,25 @@ import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
   const formData = await req.formData();
-  const name = formData.get("name")?.toString() || "";
+  const rawName = formData.get("name");
+  const name = typeof rawName === "string" ? rawName.trim() : "";
+
+    // Build an absolute URL for redirects
+  const redirectUrl = new URL("/home", req.url);
 
   if (!name) {
-    return NextResponse.json({ error: "Name is required" }, { status: 400 });
+    return NextResponse.redirect(redirectUrl);
   }
 
-  // Write to Supabase via Prisma
+  // Write to Supabase via Prisma,
+  // ID is auto-generated cuid
   await prisma.toolType.create({
     data: { name },
   });
 
-  // Redirect back to /test
-  return NextResponse.redirect("/home");
+  // after insert redirect back to /home
+  return NextResponse.redirect(redirectUrl);
 }
-
 
 // import NextAuth from "next-auth";
 // import GitHubProvider from "next-auth/providers/github";
@@ -52,4 +56,4 @@ export async function POST(req: Request) {
 //   },
 // });
 
-// export { handler as GET, handler as POST };
+// export { handler as GET, handler as POST }}}}}
